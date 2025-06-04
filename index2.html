@@ -1,0 +1,176 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basal Basics - Health Starts in Your Cells</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            height: 96;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-green-600">Basal Basics</div>
+            <ul class="flex space-x-6">
+                <li><a href="#" class="text-gray-700 hover:text-green-600">Home</a></li>
+                <li><a href="#products" class="text-gray-700 hover:text-green-600">Supplements</a></li>
+                <li><a href="#mission" class="text-gray-700 hover:text-green-600">Our Mission</a></li>
+                <li><a href="#quality" class="text-gray-700 hover:text-green-600">Quality</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-green-600">Blog</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-green-600">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section with Video -->
+    <section class="hero-section h-96 flex items-center justify-center text-center text-white">
+        <video class="hero-video" autoplay loop muted playsinline>
+            <source src="https://assets.pexels.com/videos/2020/pexels-wellness-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="bg-black bg-opacity-50 p-8 rounded-lg z-10">
+            <h1 class="text-4xl font-bold mb-4">Health Starts in Your Cells</h1>
+            <p class="text-lg mb-6">Discover high-quality vitamins and minerals to support a healthy lifestyle.</p>
+            <a href="#products" class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700">Explore Supplements</a>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mission" class="container mx-auto px-6 py-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Mission</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-4">
+            After years of research, dentist Hans Beekmans developed a compact range of supplements to support a healthy lifestyle. 
+            “We are convinced that good health begins at the cellular level. Our body’s cells require essential nutrients and minerals to generate energy and perform their functions effectively. Without optimal cell function, the foundation of your health weakens.”
+        </p>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            Basal Basics focuses on providing the essential nutrients and minerals missing from modern diets and lifestyles. A strong foundation is the building block for a healthy body.
+        </p>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="bg-white py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Our Unique Formulas</h2>
+            <p class="text-lg text-gray-600 text-center mb-8 max-w-3xl mx-auto">
+                Basal Basics offers just three supplements designed to complement each other, bringing clarity to the complex world of dietary supplements. Less is more.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Fundamentals -->
+                <div class="bg-gray-100 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Fundamentals</h3>
+                    <p class="text-gray-600">
+                        A balanced combination of vitamins and minerals including calcium, magnesium, manganese, potassium, iron, iodine, copper, and zinc for optimal support of your healthy lifestyle.
+                    </p>
+                    <a href="#" class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Learn More</a>
+                </div>
+                <!-- Basic Oils -->
+                <div class="bg-gray-100 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Basic Oils</h3>
+                    <p class="text-gray-600">
+                        Our unique “golden pill” contains natural, sustainably sourced krill oil with omega-3, astaxanthin, vitamin E (all tocopherols and tocotrienols), and Ubiquinol Q10.
+                    </p>
+                    <a href="#" class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Learn More</a>
+                </div>
+                <!-- Basic C -->
+                <div class="bg-gray-100 p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Basic C</h3>
+                    <p class="text-gray-600">
+                        A fully natural vitamin C supplement with Camu Camu (30x more vitamin C than a kiwi) and Acerola (20x more vitamin C than an orange).
+                    </p>
+                    <a href="#" class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quality Section -->
+    <section id="quality" class="container mx-auto px-6 py-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Commitment to Quality</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            At Basal Basics, quality is our priority. We use the highest quality raw materials, prioritizing organic ingredients where possible. We work exclusively with certified EU producers and adhere to the strict HACCP system (Hazard Analysis & Critical Control Points) to ensure consistent quality.
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p>© 2025 Basal Basics B.V. All rights reserved.</p>
+                    <p>Schoutenbosje 11, 1251KE Laren, Netherlands</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-green-400"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-green-400"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-green-400"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="hover:text-green-400"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="mt-4 text-center">
+                <a href="#" class="text-gray-400 hover:text-green-400 mx-2">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-green-400 mx-2">Cookie Policy</a>
+                <a href="#" class="text-gray-400 hover:text-green-400 mx-2">Terms & Conditions</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
